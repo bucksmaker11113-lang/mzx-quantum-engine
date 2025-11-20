@@ -1,0 +1,326 @@
+// MZ/X QUANTUM ENGINE - MOBILE APP FRONTEND
+// B/1 - PROJECT ROOT STRUCTURE + CORE CONFIG FILES
+
+// This canvas will contain the entire frontend project (A→Z)
+// Starting with the root-level files
+
+// ============================
+// package.json
+// ============================
+{
+  "name": "mzx-quantum-mobile",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "axios": "^1.6.7",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.4.3",
+    "vite": "^5.0.0"
+  }
+}
+
+// ============================
+// vite.config.js
+// ============================
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    port: 5173,
+  }
+})
+
+// ============================
+// tailwind.config.js
+// ============================
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,jsx,ts,tsx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        cyanglow: "#00fff2",
+      }
+    },
+  },
+  plugins: [],
+}
+
+// ============================
+// postcss.config.js
+// ============================
+export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+
+// ============================
+// index.html
+// ============================
+<!DOCTYPE html>
+<html lang="hu">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MZ/X Quantum Engine</title>
+  </head>
+  <body class="bg-black text-green-300">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
+
+// ============================
+// src/main.jsx EMPTY SHELL (filled fully in B/2)
+// ============================
+// =========================================
+// B/3 – GLOBAL STYLES + ROOT LAYOUT SYSTEM
+// =========================================
+import React from "react";
+import { Outlet, NavLink } from "react-router-dom";
+import "./styles.css";
+
+export default function AppLayout() {
+  return (
+    <div className="w-full h-full min-h-screen bg-black text-green-300 flex flex-col">
+      {/* TOP BAR */}
+      <div className="w-full p-4 bg-black/70 border-b border-cyan-500/30 text-cyan-300 text-lg font-bold tracking-wide shadow-md">
+        MZ/X QUANTUM ENGINE
+      </div>
+
+      {/* PAGE AREA */}
+      <div className="flex-1 overflow-y-auto p-3">
+        <Outlet />
+      </div>
+
+      {/* BOTTOM NAVIGATION BAR */}
+      <div className="w-full bg-black/80 border-t border-cyan-500/30 flex justify-around p-2 text-sm">
+        <NavLink to="/dashboard" className={({isActive})=> isActive ? "text-cyanglow" : "text-gray-400"}>Dashboard</NavLink>
+        <NavLink to="/modules" className={({isActive})=> isActive ? "text-cyanglow" : "text-gray-400"}>Modules</NavLink>
+        <NavLink to="/position" className={({isActive})=> isActive ? "text-cyanglow" : "text-gray-400"}>Position</NavLink>
+        <NavLink to="/settings" className={({isActive})=> isActive ? "text-cyanglow" : "text-gray-400"}>Settings</NavLink>
+      </div>
+    </div>
+  );
+}
+
+
+// ============================
+// src/App.jsx (FINAL PAGE ROUTER)
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Dashboard from "./components/Dashboard";
+import Modules from "./components/Modules";
+import Position from "./components/Position";
+import Settings from "./components/Settings";
+import ChatPanel from "./components/ChatPanel";
+import Layout from "./components/Layout";
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/modules" element={<Modules />} />
+          <Route path="/position" element={<Position />} />
+          <Route path="/settings" element={<Settings />} />
+        </Routes>
+        <ChatPanel />
+      </Layout>
+    </BrowserRouter>
+  );
+}
+// ============================
+import React from "react"
+import AppRouter from "./router/AppRouter"
+import "./styles.css"
+
+export default function App(){
+  return (
+    <div className="w-full h-full">
+      <AppRouter />
+    </div>
+  )
+}
+
+// ============================
+// B/2 – MAIN.JSX + APP.JSX + ROUTER WIRED (APPEND)
+// ============================
+
+// ----------------------------
+// src/main.jsx
+// ----------------------------
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
+import App from './App'
+import './styles.css'
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
+)
+
+// ----------------------------
+// src/App.jsx
+// ----------------------------
+import React from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom'
+import Dashboard from './screens/Dashboard'
+import Settings from './screens/Settings'
+import Modules from './screens/Modules'
+import Position from './screens/Position'
+import ChatPanel from './components/ChatPanel'
+import Layout from './components/Layout'
+
+export default function App() {
+  return (
+    <Layout>
+      <Routes>
+        <Route path="/" element={<Navigate to="/dashboard" />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/modules" element={<Modules />} />
+        <Route path="/position" element={<Position />} />
+        <Route path="/settings" element={<Settings />} />
+      </Routes>
+      <ChatPanel />
+    </Layout>
+  )
+}
+
+// ============================
+// B/9 – GLOBAL ROUTER & SCREEN REGISTRY HARDENING
+// ============================
+// This block ensures that all screens are properly registered
+// and unreachable routes are redirected to /dashboard.
+
+// ----------------------------
+// src/router/AppRouter.jsx (NEW FILE)
+// ----------------------------
+import React from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import Dashboard from '../screens/Dashboard'
+import Modules from '../screens/Modules'
+import Position from '../screens/Position'
+import Settings from '../screens/Settings'
+import Layout from '../components/Layout'
+import ChatPanel from '../components/ChatPanel'
+
+export default function AppRouter(){
+  return (
+    <BrowserRouter>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Navigate to="/dashboard" />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/modules" element={<Modules />} />
+          <Route path="/position" element={<Position />} />
+          <Route path="/settings" element={<Settings />} />
+
+          {/* CATCH‑ALL: redirects unknown paths */}
+          <Route path="*" element={<Navigate to="/dashboard" />} />
+        </Routes>
+        <ChatPanel />
+      </Layout>
+    </BrowserRouter>
+  )
+}
+
+// ============================
+// B/9 – END
+
+
+// ============================
+// C BLOCK – MOBILE UI OPTIMIZATION PACK
+// ============================
+// Responsive grid layout for all screens
+// Usage example:
+// <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+// ChatPanel mobile-optimized container
+// <div class="fixed bottom-0 left-0 w-full p-2 bg-black/70 backdrop-blur-xl border-t border-cyan-500/30">
+
+// Bottom nav improved active state
+// <NavLink to="/dashboard" className={({isActive}) => "px-3 py-1 " + (isActive ? "text-cyanglow" : "text-gray-400") }>
+
+// Pulsing orb optimized for small screens
+// <div class="w-28 h-28 sm:w-40 sm:h-40 rounded-full ...">
+
+// End of C Block
+
+
+// ============================
+// D BLOCK – CAPACITOR ANDROID APK BUILD SYSTEM
+// ============================
+// This section documents the full native build integration for Android.
+
+// Step D/1 – Install Capacitor core + CLI
+// npm install @capacitor/core @capacitor/cli
+// npx cap init "MZX Quantum Engine" com.mzx.quantum
+
+// Step D/2 – Add Android platform
+// npm install @capacitor/android
+// npx cap add android
+
+// Step D/3 – Build and sync pipeline
+// npm run build
+// npx cap copy
+// npx cap sync
+
+// Step D/4 – Open in Android Studio
+// npx cap open android
+
+// Step D/5 – Android Network Security config
+// android/app/src/main/res/xml/network_security_config.xml
+// <network-security-config>
+//   <domain-config cleartextTrafficPermitted="true">
+//     <domain>mzx-backend.fly.dev</domain>
+//   </domain-config>
+// </network-security-config>
+
+// AndroidManifest.xml entry:
+// android:networkSecurityConfig="@xml/network_security_config"
+
+// Step D/6 – Build APK in Android Studio:
+// Build → Build Bundle(s) / APK(s) → Build APK
+// Output: app-release.apk
+
+// Step D/7 – Frontend .env for backend URL
+// VITE_API_URL=https://mzx-backend.fly.dev
+
+// Step D/8 – QA Checklist ensures mobile stability
+// - Router ok
+// - Dashboard live data ok
+// - ChatPanel responsive
+// - Settings functional
+// - Memory <80MB
+// - GPU load low
+
+// Step D/9 – Final APK build
+// npm run build
+// npx cap sync
+// npx cap open android
+// Build APK
+
+// End of D Block
+
